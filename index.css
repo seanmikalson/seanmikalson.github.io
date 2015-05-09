@@ -1,6 +1,12 @@
 #menu {
+    position: fixed;
+    top:250px;
+}
+
+#content {
     position: relative;
     top:250px;
+    left:100px;
 }
 
 h3 {

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Bootstrap 101 Template</title>
+    <title>Sean Mikalson</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -17,23 +17,66 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
   </head>
   <body>
-  <div class="row">
-    <div class="col-md-2 col-md-offset-10" id="menu">
-      <h3>Sean</h3>
-      <h3>Education</h3>
-      <h3>Technical Skills</h3>
-      <h3>Personal Skills</h3>
-      <h3>Projects</h3>
-      <h3>Work Experience</h3>
+
+    <div class="row">
+      <div class="col-md-10" id="content">
+      </div>
+      <div class="col-md-2 col-md-offset-10" id="menu">
+        <h3 id="sean">Sean</h3>
+        <h3 id="education">Education</h3>
+        <h3 id="tskills">Technical Skills</h3>
+        <h3 id="pskills">Personal Skills</h3>
+        <h3 id="projects">Projects</h3>
+        <h3 id="work-experience">Work Experience</h3>
+      </div>
     </div>
-  </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
+
+    <script>
+      $(document).ready(function() {
+
+        var onLoadListener = function(data) {
+          $("#content").html(data);
+        };
+
+        $( "#sean" ).click(function(event) {
+          event.preventDefault();
+          $.get("sean.html", onLoadListener);
+        });
+
+        $( "#education" ).click(function(event) {
+          event.preventDefault();
+          $.get("edu.html", onLoadListener);
+        });
+
+        $( "#tskills" ).click(function(event) {
+          event.preventDefault();
+          $.get("t-skills.html", onLoadListener);
+        });
+
+        $( "#pskills" ).click(function(event) {
+          event.preventDefault();
+          $.get("p-skills.html", onLoadListener);
+        });
+
+        $( "#projects" ).click(function(event) {
+          event.preventDefault();
+          $.get("sean.html", onLoadListener);
+        });
+
+        $( "#work-experience" ).click(function(event) {
+          event.preventDefault();
+          $.get("sean.html", onLoadListener);
+        });
+      });
+    </script>
   </body>
 </html>
 
