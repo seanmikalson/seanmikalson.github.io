@@ -10,37 +10,33 @@
     </div>
     <p id="hspeed"></p>
     <p id="hacc"></p>
+    <p id="vspeed"></p>
     <p id="x"></p>
     <p id="y"></p>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+    <script src="defines.js"></script>
+    <script src="Box.js"></script>
     <script>
 
         var canvas = document.getElementById("joust");
         var ctx = canvas.getContext("2d");
         ctx.fillStyle = "#FF0000";
-        var x = 0;
-        var y = 0;
-        var objMass = 1;
-        var objSpeed = 0;
-        var objHorizSpeed = 0;
-        var accGrav = 10;
-        var accJets = 0;
-        var accHoriz = 0;
-
         var socket = io.connect('http://localhost:8080');
+
+        var box = new Box(0,0,80,80,ctx);
 
         socket.on('connect', function(){
             socket.on('down', function(event) {
                 switch(event) {
                     case 38: //up
-                        accJets = -30;
+                        box.accelerate(0);
                         break;
                     case 37: //left
-                        accHoriz = (accHoriz - 1);
+                        box.accelerate(-1)
                         break;
                     case 39: //right
-                        accHoriz = (accHoriz + 1);
+                        box.accelerate(1);
                         break;
                     default:
                         break;
@@ -50,11 +46,12 @@
             socket.on('up', function(event) {
                 switch(event) {
                     case 38:
-                        accJets = 0;
+                        box.decelerate(0);
                         break;
                     case 37:
                     case 39:
-                        accHoriz = -1 * accHoriz;
+                        box.decelerate(1);
+                        break;
                     default:
                         break;
                 }
@@ -72,34 +69,16 @@
         });
 
         setInterval(function() {
+            // Clears the canvas
             ctx.clearRect(0,0,500,500);
-            physics();
-            ctx.fillRect(x, y, 80, 80);
-            $('#hspeed').html('Hspeed:' + objHorizSpeed);
-            $('#hacc').html('Hacc: ' + accHoriz);
-            $('#x').html('x: ' + x);
-            $('#y').html('y: ' + y);
+            box.draw();
+
+            $('#hspeed').html('Hspeed:' + box.hspeed);
+            $('#hacc').html('Hacc: ' + box.acchoriz);
+            $('#vspeed').html('vspeed: ' + box.vspeed);
+            $('#x').html('x: ' + box.x);
+            $('#y').html('y: ' + box.y);
         },10);
-
-        function physics() {
-            objSpeed = (objSpeed + accGrav * 0.010 + accJets * 0.010);
-
-            var originalSpeed = objHorizSpeed;
-            objHorizSpeed = (objHorizSpeed + accHoriz * 0.010);
-
-            // If decelerated to zero just stop the object
-            if(originalSpeed*objHorizSpeed < 0) {
-                objHorizSpeed = 0;
-                accHoriz = 0;
-            }
-
-            x = (x + objHorizSpeed * 0.010);
-            y = (y + objSpeed * 0.010);
-            x = x < 0 ? 0 : x;
-            x = x > 500 ? 500 : x;
-            y = y < 0 ? 0 : y;
-            y = y > 500 ? 500 : y;
-        }
     </script>
 </body>
 </html>

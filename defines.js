@@ -1,0 +1,3 @@
+Globals = {
+    gravity: 10
+};
