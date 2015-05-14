@@ -17,20 +17,21 @@
         ctx.fillStyle = "#FF0000";
         var x = 0;
         var y = 0;
+        var objMass = 1;
+        var objSpeed = 0;
+        var accGrav = -10;
+        var accJets = 0;
 
         var socket = io.connect('http://localhost:8080');
 
         socket.on('connect', function(){
-            socket.on('event', function(event) {
+            socket.on('down', function(event) {
                 switch(event) {
                     case 38: //up
-                        y = (y - 1) % 500;
+                        accJets = 20;
                         break;
                     case 37: //left
                         x = (x - 1) % 500;
-                        break;
-                    case 40: //down
-                        y = (y + 1) % 500;
                         break;
                     case 39: //right
                         x = (x + 1) % 500;
@@ -39,17 +40,38 @@
                         break;
                 }
             });
+
+            socket.on('up', function(event) {
+                switch(event) {
+                    case 38:
+                        accJets = 0;
+                        break;
+                    default:
+                        break;
+                }
+            })
         });
 
         $("#canvaswrapper").keydown(function(event) {
             event.preventDefault();
-            socket.emit('event', event.which);
+            socket.emit('down', event.which);
+        });
+
+        $("#canvaswrapper").keyup(function(event) {
+            event.preventDefault();
+            socket.emit('up', event.which);
         });
 
         setInterval(function() {
             ctx.clearRect(0,0,500,500);
-            ctx.fillRect(x, y, 80, 80);
+            ctx.fillRect(x, gravity(), 80, 80);
         },10);
+
+        function gravity() {
+            objSpeed = (objSpeed + accGrav * 0.010 + accJets * 0.010);
+            y = (y - objSpeed * 0.010);
+            return y;
+        }
     </script>
 </body>
 </html>
