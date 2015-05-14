@@ -8,6 +8,10 @@
     <div id="canvaswrapper">
         <canvas id="joust" height="500px" width="500px" tabindex="1"></canvas>
     </div>
+    <p id="hspeed"></p>
+    <p id="hacc"></p>
+    <p id="x"></p>
+    <p id="y"></p>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
     <script>
@@ -19,8 +23,10 @@
         var y = 0;
         var objMass = 1;
         var objSpeed = 0;
-        var accGrav = -10;
+        var objHorizSpeed = 0;
+        var accGrav = 10;
         var accJets = 0;
+        var accHoriz = 0;
 
         var socket = io.connect('http://localhost:8080');
 
@@ -28,13 +34,13 @@
             socket.on('down', function(event) {
                 switch(event) {
                     case 38: //up
-                        accJets = 20;
+                        accJets = -30;
                         break;
                     case 37: //left
-                        x = (x - 1) % 500;
+                        accHoriz = (accHoriz - 1);
                         break;
                     case 39: //right
-                        x = (x + 1) % 500;
+                        accHoriz = (accHoriz + 1);
                         break;
                     default:
                         break;
@@ -46,6 +52,9 @@
                     case 38:
                         accJets = 0;
                         break;
+                    case 37:
+                    case 39:
+                        accHoriz = -1 * accHoriz;
                     default:
                         break;
                 }
@@ -64,13 +73,32 @@
 
         setInterval(function() {
             ctx.clearRect(0,0,500,500);
-            ctx.fillRect(x, gravity(), 80, 80);
+            physics();
+            ctx.fillRect(x, y, 80, 80);
+            $('#hspeed').html('Hspeed:' + objHorizSpeed);
+            $('#hacc').html('Hacc: ' + accHoriz);
+            $('#x').html('x: ' + x);
+            $('#y').html('y: ' + y);
         },10);
 
-        function gravity() {
+        function physics() {
             objSpeed = (objSpeed + accGrav * 0.010 + accJets * 0.010);
-            y = (y - objSpeed * 0.010);
-            return y;
+
+            var originalSpeed = objHorizSpeed;
+            objHorizSpeed = (objHorizSpeed + accHoriz * 0.010);
+
+            // If decelerated to zero just stop the object
+            if(originalSpeed*objHorizSpeed < 0) {
+                objHorizSpeed = 0;
+                accHoriz = 0;
+            }
+
+            x = (x + objHorizSpeed * 0.010);
+            y = (y + objSpeed * 0.010);
+            x = x < 0 ? 0 : x;
+            x = x > 500 ? 500 : x;
+            y = y < 0 ? 0 : y;
+            y = y > 500 ? 500 : y;
         }
     </script>
 </body>
