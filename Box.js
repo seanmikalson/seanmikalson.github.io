@@ -23,7 +23,7 @@ var Box = function(initx, inity, dimx, dimy, ctx) {
 Box.prototype.accelerate = function(direction) {
     if(direction != -1 && direction != 1 && direction != 0) throw Error('Invalid direction');
     this.acchoriz = (this.acchoriz + 1*direction);
-    this.acchoriz = this.acchoriz > this.maxhacc ? this.maxhacc : this.acchoriz;
+    this.acchoriz = Math.abs(this.acchoriz) > this.maxhacc ? this.maxhacc * direction : this.acchoriz;
 
     if(direction == 0) {
         this.accUp = -30;
@@ -43,7 +43,7 @@ Box.prototype.decelerate = function(direction) {
 Box.prototype.applyPhysics = function() {
     this.vspeed = (this.vspeed + Globals.gravity * 0.010 + this.accUp * 0.010);
     this.vspeed = this.vspeed > this.maxvspeed ? this.maxvspeed : this.vspeed;
-    
+
     this.hspeed = (this.hspeed + this.acchoriz * 0.010 + (this.hspeed / -2) * 0.010);
     this.hspeed = this.hspeed > this.maxhspeed ? this.maxhspeed : this.hspeed;
 
