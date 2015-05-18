@@ -1,0 +1,19 @@
+#gamedisp {
+    display: none;
+}
+
+#joust {
+    border: solid black;
+}
+
+#r1 {
+    padding-top: 100px;
+}
+
+#modechoice {
+    padding-bottom: 10px;
+}
+
+h3 {
+    text-align: center;
+}
