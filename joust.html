@@ -64,11 +64,6 @@
     <script src="defines.js"></script>
     <script src="Box.js"></script>
     <script>
-        $('#displaybutton').click(function(event) {
-            $('#modechoice').fadeOut(function() {
-                $('#gamedisp').fadeIn();
-            });
-        });
 
         var canvas = document.getElementById("joust");
         var ctx = canvas.getContext("2d");
@@ -78,45 +73,58 @@
         var box = new Box(0,0,80,80,ctx);
 
         socket.on('connect', function(){
-            socket.on('down', function(event) {
-                switch(event) {
-                    case 38: //up
-                        box.accelerate(0);
-                        break;
-                    case 37: //left
-                        box.accelerate(-1);
-                        break;
-                    case 39: //right
-                        box.accelerate(1);
-                        break;
-                    default:
-                        break;
-                }
+
+            $('#displaybutton').click(function(event) {
+                $('#modechoice').fadeOut(function() {
+                    $('#gamedisp').fadeIn();
+                });
+
+                socket.emit('display', null);
             });
 
-            socket.on('up', function(event) {
-                switch(event) {
-                    case 38:
-                        box.decelerate(0);
-                        break;
-                    case 37:
-                    case 39:
-                        box.decelerate(1);
-                        break;
-                    default:
-                        break;
-                }
-            })
-        });
+            socket.on('display', function(game) {
+                var gameid = game.gameid;
 
-        $("#canvaswrapper").keydown(function(event) {
-            event.preventDefault();
-            socket.emit('down', event.which);
-        });
+                socket.on('down-'+gameid, function(event) {
+                    switch(event) {
+                        case 38: //up
+                            box.accelerate(0);
+                            break;
+                        case 37: //left
+                            box.accelerate(-1);
+                            break;
+                        case 39: //right
+                            box.accelerate(1);
+                            break;
+                        default:
+                            break;
+                    }
+                });
 
-        $("#canvaswrapper").keyup(function(event) {
-            event.preventDefault();
-            socket.emit('up', event.which);
+                socket.on('up-'+gameid, function(event) {
+                    switch(event) {
+                        case 38:
+                            box.decelerate(0);
+                            break;
+                        case 37:
+                        case 39:
+                            box.decelerate(1);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+
+                $("#canvaswrapper").keydown(function(event) {
+                    event.preventDefault();
+                    socket.emit('down-'+gameid, event.which);
+                });
+
+                $("#canvaswrapper").keyup(function(event) {
+                    event.preventDefault();
+                    socket.emit('up-'+gameid, event.which);
+                });
+            });
         });
 
         setInterval(function() {
