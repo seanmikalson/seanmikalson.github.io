@@ -28,19 +28,36 @@
 
     <link type="text/css" rel="stylesheet" href="joust.css">
 
+    <p id="count"></p>
     <div class="container-fluid">
         <div class="row" id="r1">
-            <div id="modechoice" class="col-md-4 col-md-offset-4">
+            <div id="modechoice">
                 <div class="row">
-                    <h3>Choose Mode</h3>
+                    <h3 class="text-center">Choose Mode</h3>
                 </div>
                 <div class="row">
-                    <button class="btn btn-default col-md-offset-4" id="displaybutton">Display</button>
-                    <button class="btn btn-default " id="controlbutton">Controller</button>
+                    <div class="text-center">
+                        <button class="btn btn-default" id="displaybutton">Display</button>
+                        <button class="btn btn-default" id="controlbutton">Controller</button>
+                    </div>
+
                 </div>
             </div>
 
+            <div id="enter-id">
+                <h3 class="text-center">Enter Number in the 'Display' browser</h3>
+                <div class="form-inline text-center">
+                    <input type="text" class="form-control text-center" id="gameidinput">
+                    <button class="btn btn-default" type="submit" id="gameidsubmit">Enter</button>
+                </div>
+            </div>
+
+            <div id="control-area" class="col-md-4 col-md-offset-4">
+                <canvas id="control-joust" height="500px" width="500px" tabindex="1"></canvas>
+            </div>
+
             <div id="gamedisp">
+                <p id="gameid"></p>
                 <div id="canvaswrapper" class="col-md-4 col-md-offset-4">
                     <canvas id="joust" height="500px" width="500px" tabindex="1"></canvas>
                 </div>
@@ -82,8 +99,34 @@
                 socket.emit('display', null);
             });
 
+            $('#controlbutton').click(function(event) {
+                $('#modechoice').fadeOut(function() {
+                    $('#enter-id').fadeIn();
+                });
+            });
+
+            $('#gameidsubmit').click(function(event) {
+                var gameid = $('#gameidinput').val();
+                socket.emit('control', gameid);
+
+                $("#control-joust").keydown(function(event) {
+                    event.preventDefault();
+                    socket.emit('down-'+gameid, event.which);
+                });
+
+                $("#control-joust").keyup(function(event) {
+                    event.preventDefault();
+                    socket.emit('up-'+gameid, event.which);
+                });
+
+                $('#enter-id').fadeOut(function() {
+                    $('#control-area').fadeIn();
+                });
+            });
+
             socket.on('display', function(game) {
                 var gameid = game.gameid;
+                $('#gameid').html('<h3 class="text-center">Game ID: ' + gameid + '</h3>');
 
                 socket.on('down-'+gameid, function(event) {
                     switch(event) {
@@ -114,16 +157,6 @@
                             break;
                     }
                 });
-
-                $("#canvaswrapper").keydown(function(event) {
-                    event.preventDefault();
-                    socket.emit('down-'+gameid, event.which);
-                });
-
-                $("#canvaswrapper").keyup(function(event) {
-                    event.preventDefault();
-                    socket.emit('up-'+gameid, event.which);
-                });
             });
         });
 
@@ -138,6 +171,7 @@
             $('#x').html('x: ' + box.x);
             $('#y').html('y: ' + box.y);
         },10);
+
     </script>
 </body>
 </html>
