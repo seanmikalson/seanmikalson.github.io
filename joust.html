@@ -15,7 +15,8 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
 
@@ -75,19 +76,30 @@
 
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
-
     <script src="defines.js"></script>
     <script src="Box.js"></script>
     <script>
 
         var canvas = document.getElementById("joust");
         var ctx = canvas.getContext("2d");
+        var controljoust = document.getElementById('control-joust');
+        var controlctx = controljoust.getContext('2d');
+
         ctx.fillStyle = "#FF0000";
         var socket = io.connect((Globals.dev ? 'localhost' : 'http://radiant-woodland-2953.herokuapp.com'));
 
         var box = new Box(0,0,80,80,ctx);
+
+        function getMousePos(canvas, evt) {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                x: evt.clientX - rect.left/(rect.right-rect.left)*canvas.width,
+                y: evt.clientY - rect.top/(rect.bottom-rect.top)*canvas.height
+            };
+        }
+        var touchx = 0;
+        var touchy = 0;
 
         socket.on('connect', function(){
 
@@ -108,6 +120,24 @@
             $('#gameidsubmit').click(function(event) {
                 var gameid = $('#gameidinput').val();
                 socket.emit('control', gameid);
+
+                $('#control-joust').on('vmousemove', function(event) {
+                    var pos = getMousePos(controljoust, event);
+                    touchx = pos.x;
+                    touchy = pos.y;
+
+                    if(touchx > 250) {
+                        socket.emit('down-' + gameid, 39);
+                    } else {
+                        socket.emit('down-' + gameid, 37);
+                    }
+
+                    if(touchy > 250) {
+                        socket.emit('up-'+gameid, 38);
+                    } else {
+                        socket.emit('down-'+gameid, 38);
+                    }
+                });
 
                 $("#control-joust").keydown(function(event) {
                     event.preventDefault();
@@ -164,6 +194,11 @@
             // Clears the canvas
             ctx.clearRect(0,0,500,500);
             box.draw();
+
+            controlctx.clearRect(0,0,500,500);
+            controlctx.beginPath();
+            controlctx.arc(touchx,touchy,40,0,2*Math.PI);
+            controlctx.stroke();
 
             $('#hspeed').html('Hspeed:' + box.hspeed);
             $('#hacc').html('Hacc: ' + box.acchoriz);
