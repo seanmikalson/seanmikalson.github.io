@@ -1,4 +1,4 @@
 Globals = {
     gravity: 10,
-    dev: true
+    dev: false
 };
