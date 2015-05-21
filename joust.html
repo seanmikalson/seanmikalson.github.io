@@ -122,6 +122,7 @@
                 socket.emit('control', gameid);
 
                 $('#control-joust').on('vmousemove', function(event) {
+                    event.preventDefault();
                     var pos = getMousePos(controljoust, event);
                     touchx = pos.x;
                     touchy = pos.y;
