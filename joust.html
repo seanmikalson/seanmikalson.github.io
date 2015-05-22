@@ -107,6 +107,23 @@
             $('#displaybutton').click(function(event) {
                 $('#modechoice').fadeOut(function() {
                     $('#gamedisp').fadeIn();
+
+                    setInterval(function() {
+                        // Clears the canvas
+                        ctx.clearRect(0,0,500,500);
+                        box.draw();
+
+                        controlctx.clearRect(0,0,controlctx.canvas.width,controlctx.canvas.height);
+                        controlctx.beginPath();
+                        controlctx.arc(touchx,touchy,40,0,2*Math.PI);
+                        controlctx.stroke();
+
+                        $('#hspeed').html('Hspeed:' + box.hspeed);
+                        $('#hacc').html('Hacc: ' + box.acchoriz);
+                        $('#vspeed').html('vspeed: ' + box.vspeed);
+                        $('#x').html('x: ' + box.x);
+                        $('#y').html('y: ' + box.y);
+                    },10);
                 });
 
                 socket.emit('display', null);
@@ -191,23 +208,6 @@
                 });
             });
         });
-
-        setInterval(function() {
-            // Clears the canvas
-            ctx.clearRect(0,0,500,500);
-            box.draw();
-
-            controlctx.clearRect(0,0,controlctx.canvas.width,controlctx.canvas.height);
-            controlctx.beginPath();
-            controlctx.arc(touchx,touchy,40,0,2*Math.PI);
-            controlctx.stroke();
-
-            $('#hspeed').html('Hspeed:' + box.hspeed);
-            $('#hacc').html('Hacc: ' + box.acchoriz);
-            $('#vspeed').html('vspeed: ' + box.vspeed);
-            $('#x').html('x: ' + box.x);
-            $('#y').html('y: ' + box.y);
-        },10);
 
     </script>
 </body>

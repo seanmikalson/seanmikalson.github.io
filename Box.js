@@ -72,3 +72,8 @@ Box.prototype.draw = function() {
     this.detectCollision();
     this.context.fillRect(this.x, this.y, this.dx, this.dy);
 };
+
+Box.prototype.reset = function() {
+    this.x = 0;
+    this.y = 0;
+}
