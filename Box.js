@@ -1,10 +1,11 @@
-define(function() {
-    var Box = function(initx, inity, dimx, dimy, ctx) {
+define(['defines'],function(defines) {
+    var Box = function(initx, inity, dimx, dimy, ctx, fillstyle) {
         this.x = initx;
         this.y = inity;
         this.dx = dimx;
         this.dy = dimy;
         this.context = ctx;
+        this.fillStyle = fillstyle;
 
         this.hspeed = 0;
         this.vspeed = 0;
@@ -41,7 +42,7 @@ define(function() {
     };
 
     Box.prototype.applyPhysics = function() {
-        this.vspeed = (this.vspeed + Globals.gravity * 0.010 + this.accUp * 0.010);
+        this.vspeed = (this.vspeed + defines.Globals.gravity * 0.010 + this.accUp * 0.010);
         this.vspeed = this.vspeed > this.maxvspeed ? this.maxvspeed : this.vspeed;
 
         this.hspeed = (this.hspeed + this.acchoriz * 0.010 + (this.hspeed / -2) * 0.010);
@@ -68,6 +69,7 @@ define(function() {
     };
 
     Box.prototype.draw = function() {
+        this.context.fillStyle = this.fillStyle;
         this.applyPhysics();
         this.detectCollision();
         this.context.fillRect(this.x, this.y, this.dx, this.dy);
